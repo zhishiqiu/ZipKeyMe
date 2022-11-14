@@ -2,12 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 //--------------------------------------------------
@@ -19,23 +21,25 @@ model User {
   name          String
   phone         String          @unique
   email         String          @unique
-  gender        String
+  gender        Gender
   birth         DateTime
-  push_agree    Boolean         @default(true)
+  pushAgree     Boolean         @default(true)
   likes         Likes[]
   post          Post[]
   reple         Reple[]
   UserHousehold UserHousehold[]
   UserComplaint UserComplaint[]
-  userVote      userVote[]
-  userChatting  userChatting[]
+  userVote      UserVote[]
+  userChatting  UserChatting[]
 }
 
 // 1-2. 가구
 model Household {
   houseId       Int             @id @default(autoincrement())
   aptHo         Int
-  dateIn        DateTime
+  aptDong       Int
+  apartment     Apartment       @relation(references: [aptDong], fields: [aptDong])
+  moveInAt      DateTime
   holder        String
   fares         Fare[]
   UserHousehold UserHousehold[]
@@ -47,6 +51,7 @@ model Apartment {
   aptDong        Int          @id
   representative String?      @default("공석")
   VoteTarget     VoteTarget[]
+  Household      Household[]
 }
 
 // 1-4. 직원
@@ -62,8 +67,9 @@ model Fare {
   fareId        Int       @id @default(autoincrement())
   houseId       Int
   household     Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
-  farePaid      Boolean   @default(false)
-  fareDate      DateTime
+  isPaid        Boolean   @default(false)
+  fareAt        DateTime  @default(now())
+  paidAt        DateTime?
   electric      Int
   water         Int
   gas           Int
@@ -78,10 +84,10 @@ model Car {
   type         String
   owner        String
   ownerPhone   String
-  regDate      DateTime
-  applyDate    DateTime       @default(now())
+  enroleAt     DateTime?
+  applyAt      DateTime       @default(now())
   isAccept     Boolean        @default(false)
-  isAuest      Boolean        @default(false)
+  isGuest      Boolean        @default(false)
   HouseholdCar HouseholdCar[]
 }
 
@@ -90,9 +96,9 @@ model Post {
   postId   Int        @id @default(autoincrement())
   title    String     @unique
   id       String
-  users    User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  user     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
   content  String
-  postDate DateTime   @default(now())
+  postAt   DateTime   @default(now())
   isNotice Boolean    @default(false)
   reple    Reple[]
   likes    Likes[]
@@ -106,27 +112,27 @@ model Reple {
   id      String
   users   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
   content String
-  date    DateTime @default(now())
+  repleAt DateTime @default(now())
 }
 
 model Likes {
-  postId   Int      @id
-  post     Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
-  id       String
-  user     User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
-  likeDate DateTime @default(now())
+  postId Int      @id
+  post   Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
+  id     String
+  user   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  likeAt DateTime @default(now())
 }
 
 // 2-5. 투표 & 후보 & 투표대상
 model Vote {
   voteId     Int          @id @default(autoincrement())
   title      String       @unique
-  sDate      DateTime
-  fDate      DateTime
+  startAt    DateTime
+  finishAt   DateTime
   reChoice   Boolean      @default(false)
   candidate  Candidate[]
   VoteTarget VoteTarget[]
-  userVote   userVote[]
+  userVote   UserVote[]
 }
 
 model Candidate {
@@ -151,7 +157,7 @@ model VoteTarget {
 model Complaint {
   comId         Int             @id @default(autoincrement())
   category      Categories
-  date          DateTime        @default(now())
+  comAt         DateTime        @default(now())
   content       String
   state         States          @default(YET)
   UserComplaint UserComplaint[]
@@ -159,10 +165,9 @@ model Complaint {
 
 // 2-7. 채팅목록 & 채팅방
 model ChattingRoom {
-  chatId     Int        @id @default(autoincrement())
-  createDate DateTime   @default(now())
-  updateDate DateTime   @updatedAt
-  Chatting   Chatting[]
+  chatId   Int        @id @default(autoincrement())
+  createAt DateTime   @default(now())
+  Chatting Chatting[]
 }
 
 model Chatting {
@@ -172,7 +177,7 @@ model Chatting {
   msg          String
   sendAt       DateTime       @default(now())
   seen         Boolean        @default(false)
-  userChatting userChatting[]
+  userChatting UserChatting[]
 }
 
 //--------------------------------------------------
@@ -194,7 +199,7 @@ model UserComplaint {
 }
 
 // 3-3. 입주민 - 투표 관계
-model userVote {
+model UserVote {
   voteId  Int     @id
   vote    Vote    @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
   id      String
@@ -204,7 +209,7 @@ model userVote {
 }
 
 // 3-4. 입주민 - 채팅 관계
-model userChatting {
+model UserChatting {
   chatId   Int      @id
   chatting Chatting @relation(references: [chatId], fields: [chatId], onDelete: Cascade, onUpdate: Cascade)
   id       String
@@ -280,4 +285,10 @@ enum Types {
   NOTICE_ALARM
   CHAT_ALARM
   COM_ALARM
+}
+
+// 5-4. 성별 [남성, 여성]
+enum Gender {
+  MALE
+  FEMALE
 }
