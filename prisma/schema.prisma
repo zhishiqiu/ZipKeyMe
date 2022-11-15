@@ -16,42 +16,46 @@ datasource db {
 // 1. 사용자 관련 스키마
 // 1-1. 유저(입주민)
 model User {
-  id            String          @id
+  id            String         @id
   pwd           String
   name          String
-  phone         String          @unique
-  email         String          @unique
+  phone         String         @unique
+  email         String         @unique
   gender        Gender
   birth         DateTime
-  pushAgree     Boolean         @default(true)
+  pushAgree     Boolean        @default(true)
+  isAccept      Boolean        @default(false)
+  acceptAt      DateTime?
+  houseId       Int
+  household     Household      @relation(references: [houseId], fields: [houseId])
   likes         Likes[]
-  post          Post[]
-  reple         Reple[]
-  UserHousehold UserHousehold[]
-  UserComplaint UserComplaint[]
-  userVote      UserVote[]
-  userChatting  UserChatting[]
+  posts         Post[]
+  reples        Reple[]
+  alarms        Alarm[]
+  complaints    Complaint[]
+  chattingRooms ChattingRoom[]
+  userVotes     UserVote[]
 }
 
 // 1-2. 가구
 model Household {
-  houseId       Int             @id @default(autoincrement())
-  aptHo         Int
-  aptDong       Int
-  apartment     Apartment       @relation(references: [aptDong], fields: [aptDong])
-  moveInAt      DateTime
-  holder        String
-  fares         Fare[]
-  UserHousehold UserHousehold[]
-  HouseholdCar  HouseholdCar[]
+  houseId   Int       @id @default(autoincrement())
+  aptHo     Int
+  aptDong   Int
+  moveInAt  DateTime
+  holder    String
+  apartment Apartment @relation(references: [aptDong], fields: [aptDong])
+  fares     Fare[]
+  users     User[]
+  cars      Car[]
 }
 
 // 1-3. 아파트 동
 model Apartment {
   aptDong        Int          @id
   representative String?      @default("공석")
-  VoteTarget     VoteTarget[]
-  Household      Household[]
+  voteTargets    VoteTarget[]
+  households     Household[]
 }
 
 // 1-4. 직원
@@ -66,9 +70,9 @@ model Staff {
 model Fare {
   fareId        Int       @id @default(autoincrement())
   houseId       Int
-  household     Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
-  isPaid        Boolean   @default(false)
   fareAt        DateTime  @default(now())
+  deadLine      DateTime
+  isPaid        Boolean   @default(false)
   paidAt        DateTime?
   electric      Int
   water         Int
@@ -76,74 +80,76 @@ model Fare {
   electricUsage Float
   waterUsage    Float
   gasUsage      Float
+  household     Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // 2-2. 차량
 model Car {
-  number       String         @id
-  type         String
-  owner        String
-  ownerPhone   String
-  enroleAt     DateTime?
-  applyAt      DateTime       @default(now())
-  isAccept     Boolean        @default(false)
-  isGuest      Boolean        @default(false)
-  HouseholdCar HouseholdCar[]
+  number     String    @id
+  houseId    Int
+  type       String
+  owner      String
+  ownerPhone String
+  enroleAt   DateTime?
+  applyAt    DateTime  @default(now())
+  isAccept   Boolean   @default(false)
+  isGuest    Boolean   @default(false)
+  household  Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // 2-3. 게시글 & 댓글 & 좋아요 게시글
 model Post {
-  postId   Int        @id @default(autoincrement())
-  title    String     @unique
-  id       String
-  user     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
-  content  String
-  postAt   DateTime   @default(now())
-  isNotice Boolean    @default(false)
-  reple    Reple[]
-  likes    Likes[]
-  PostFile PostFile[]
+  postId    Int        @id @default(autoincrement())
+  title     String     @unique
+  id        String
+  content   String
+  postAt    DateTime   @default(now())
+  isNotice  Boolean    @default(false)
+  users     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  reples    Reple[]
+  likes     Likes[]
+  postFiles PostFile[]
 }
 
 model Reple {
   repleId Int      @id @default(autoincrement())
   postId  Int
-  post    Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
   id      String
-  users   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
   content String
   repleAt DateTime @default(now())
+  post    Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
+  users   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Likes {
   postId Int      @id
-  post   Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
   id     String
-  user   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
   likeAt DateTime @default(now())
+  post   Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
+  user   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // 2-5. 투표 & 후보 & 투표대상
 model Vote {
-  voteId     Int          @id @default(autoincrement())
-  title      String       @unique
-  startAt    DateTime
-  finishAt   DateTime
-  reChoice   Boolean      @default(false)
-  candidate  Candidate[]
-  VoteTarget VoteTarget[]
-  userVote   UserVote[]
+  voteId      Int          @id @default(autoincrement())
+  title       String       @unique
+  startAt     DateTime
+  finishAt    DateTime
+  reChoice    Boolean      @default(false)
+  candidates  Candidate[]
+  voteTargets VoteTarget[]
+  userVotes   UserVote[]
 }
 
 model Candidate {
-  candId        Int             @id @default(autoincrement())
-  voteId        Int
-  vote          Vote            @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
-  name          String
-  count         Int             @default(0)
-  profile       String?
-  imgId         Int?            @unique
-  CandidateFile CandidateFile[]
+  candId  Int     @id @default(autoincrement())
+  voteId  Int
+  vote    Vote    @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
+  name    String
+  count   Int     @default(0)
+  profile String?
+  fileId  Int?
+  file    File?   @relation(references: [fileId], fields: [fileId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model VoteTarget {
@@ -155,108 +161,73 @@ model VoteTarget {
 
 // 2-6. 민원
 model Complaint {
-  comId         Int             @id @default(autoincrement())
-  category      Categories
-  comAt         DateTime        @default(now())
-  content       String
-  state         States          @default(YET)
-  UserComplaint UserComplaint[]
+  comId    Int        @id @default(autoincrement())
+  id       String
+  category Categories
+  comAt    DateTime   @default(now())
+  content  String
+  state    States     @default(YET)
+  users    User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // 2-7. 채팅목록 & 채팅방
 model ChattingRoom {
-  chatId   Int        @id @default(autoincrement())
-  createAt DateTime   @default(now())
-  Chatting Chatting[]
+  chatId    Int        @id @default(autoincrement())
+  id        String
+  createAt  DateTime   @default(now())
+  users     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  chattings Chatting[]
 }
 
 model Chatting {
-  chatId       Int            @id
-  chattingRoom ChattingRoom   @relation(references: [chatId], fields: [chatId], onDelete: Cascade, onUpdate: Cascade)
+  chatId       Int          @id
   sender       String
   msg          String
-  sendAt       DateTime       @default(now())
-  seen         Boolean        @default(false)
-  userChatting UserChatting[]
+  sendAt       DateTime     @default(now())
+  isRead       Boolean      @default(false)
+  chattingRoom ChattingRoom @relation(references: [chatId], fields: [chatId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 //--------------------------------------------------
 // 3. 관계 스키마
-// 3-1. 입주민 - 가구 관계
-model UserHousehold {
-  id        String    @id
-  user      User      @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
-  houseId   Int
-  household Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
-}
-
-// 3-2. 입주민 - 민원 관계
-model UserComplaint {
-  id        String    @id
-  user      User      @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
-  comId     Int
-  complaint Complaint @relation(references: [comId], fields: [comId], onDelete: Cascade, onUpdate: Cascade)
-}
-
-// 3-3. 입주민 - 투표 관계
+// 3-1. 입주민 - 투표 관계
 model UserVote {
   voteId  Int     @id
-  vote    Vote    @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
   id      String
-  user    User    @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
   isVoted Boolean @default(false)
   choice  Int?
-}
-
-// 3-4. 입주민 - 채팅 관계
-model UserChatting {
-  chatId   Int      @id
-  chatting Chatting @relation(references: [chatId], fields: [chatId], onDelete: Cascade, onUpdate: Cascade)
-  id       String
-  user     User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-// 3-5. 가구 - 차량 관계
-model HouseholdCar {
-  number    String    @id
-  car       Car       @relation(references: [number], fields: [number], onDelete: Cascade, onUpdate: Cascade)
-  houseId   Int
-  household Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
+  vote    Vote    @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
+  user    User    @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // 3-7. 게시글 - 파일 관계
 model PostFile {
   fileId Int  @id
-  file   File @relation(references: [fileId], fields: [fileId], onDelete: Cascade, onUpdate: Cascade)
   postId Int
+  file   File @relation(references: [fileId], fields: [fileId], onDelete: Cascade, onUpdate: Cascade)
   post   Post @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
-}
-
-// 3-8. 후보 - 파일 관계
-model CandidateFile {
-  fileId    Int       @id
-  file      File      @relation(references: [fileId], fields: [fileId], onDelete: Cascade, onUpdate: Cascade)
-  imgId     Int
-  candidate Candidate @relation(references: [imgId], fields: [imgId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 //--------------------------------------------------
 // 4. 부가 기능 스키마
 // 4-1. 알림
-model Alert {
-  alertId  Int      @id @default(autoincrement())
-  type     Types
-  targetId Int
-  alertAt  DateTime @default(now())
+model Alarm {
+  alertId Int      @id @default(autoincrement())
+  id      String
+  type    Types
+  isRead  Boolean  @default(false)
+  content String
+  alertAt DateTime @default(now())
+  user    User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // 4-2. 파일
 model File {
-  fileId        Int             @id @default(autoincrement())
-  src           String
-  meta          String?
-  PostFile      PostFile[]
-  CandidateFile CandidateFile[]
+  fileId     Int         @id @default(autoincrement())
+  src        String
+  meta       String?
+  postFiles  PostFile[]
+  candidates Candidate[]
 }
 
 //--------------------------------------------------
