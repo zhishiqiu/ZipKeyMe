@@ -5,7 +5,11 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'pantone': '#6667AB',
+      },
+    },
   },
   darkMode: "media", // class
   plugins: [require("@tailwindcss/forms")],
