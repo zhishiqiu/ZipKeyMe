@@ -1,11 +1,16 @@
-import type {NextPage} from "next";
+import type {NextPage} from 'next'
+import Layout from "../../components/layout";
+import Head from "next/head";
 
 const Chats: NextPage = () => {
   return (
-    <div className={"bg-red-500"}>
-      <h1 className={"text-blue-500"}>채팅</h1>
-    </div>
-  )
-};
+    <Layout title={"관리자 채팅"} hasTabBar>
+      <Head><title>Chats</title></Head>
+      <div className={"flex flex-col space-y-5 divide-y"}>
+        관리자 채팅
+      </div>
+    </Layout>
+  );
+}
 
 export default Chats;

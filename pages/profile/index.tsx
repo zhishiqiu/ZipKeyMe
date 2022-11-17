@@ -1,11 +1,16 @@
-import type { NextPage } from "next";
+import type {NextPage} from 'next'
+import Layout from "../../components/layout";
+import Head from "next/head";
 
 const Profile: NextPage = () => {
   return (
-    <div className={"bg-red-500"}>
-      <h1 className={"text-blue-500"}>마이페이지</h1>
-    </div>
+    <Layout title={"마이페이지"} hasTabBar>
+      <Head><title>Profile</title></Head>
+      <div className={"flex flex-col space-y-5 divide-y"}>
+        마이페이지
+      </div>
+    </Layout>
   );
-};
+}
 
 export default Profile;

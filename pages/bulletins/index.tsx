@@ -1,11 +1,17 @@
-import type {NextPage} from "next";
+import type {NextPage} from 'next'
+import Layout from "../../components/layout";
+import Head from "next/head";
 
 const Bulletins: NextPage = () => {
   return (
-    <div className={"bg-red-500"}>
-      <h1 className={"text-blue-500"}>게시판</h1>
-    </div>
-  )
-};
+    <Layout title={"게시판"} canGoBack hasTabBar>
+      <Head><title>Bulletins</title></Head>
+      <div className={"flex flex-col space-y-5 divide-y"}>
+        게시판
+      </div>
+    </Layout>
+  );
+}
 
 export default Bulletins;
+
