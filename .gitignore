@@ -39,10 +39,3 @@ next-env.d.ts
 .env
 
 #don't push
-/libs/client
-/components
-/pages/*.tsx
-/pages/bulletins
-/pages/chats
-/pages/fare
-/pages/profile
