@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+//--------------------------------------------------
+// 1. 사용자 관련 스키마
+// 1-1. 유저(입주민)
+model User {
+  id            String         @id
+  pwd           String
+  name          String
+  phone         String         @unique
+  email         String         @unique
+  gender        Gender
+  birth         DateTime
+  pushAgree     Boolean        @default(true)
+  isAccept      Boolean        @default(false)
+  acceptAt      DateTime?
+  houseId       Int
+  household     Household      @relation(references: [houseId], fields: [houseId])
+  likes         Likes[]
+  posts         Post[]
+  reples        Reple[]
+  alarms        Alarm[]
+  complaints    Complaint[]
+  chattingRooms ChattingRoom[]
+  userVotes     UserVote[]
+}
+
+// 1-2. 가구
+model Household {
+  houseId   Int       @id @default(autoincrement())
+  aptHo     Int
+  aptDong   Int
+  moveInAt  DateTime
+  holder    String
+  apartment Apartment @relation(references: [aptDong], fields: [aptDong])
+  fares     Fare[]
+  users     User[]
+  cars      Car[]
+}
+
+// 1-3. 아파트 동
+model Apartment {
+  aptDong        Int          @id
+  representative String?      @default("공석")
+  voteTargets    VoteTarget[]
+  households     Household[]
+}
+
+// 1-4. 직원
+model Staff {
+  id  String @id
+  pwd String
+}
+
+//--------------------------------------------------
+// 2. 핵심 기능 관련 스키마
+// 2-1. 요금
+model Fare {
+  fareId        Int       @id @default(autoincrement())
+  houseId       Int
+  fareAt        DateTime  @default(now())
+  deadLine      DateTime
+  isPaid        Boolean   @default(false)
+  paidAt        DateTime?
+  electric      Int
+  water         Int
+  gas           Int
+  electricUsage Float
+  waterUsage    Float
+  gasUsage      Float
+  household     Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 2-2. 차량
+model Car {
+  number     String    @id
+  houseId    Int
+  type       String
+  owner      String
+  ownerPhone String
+  enroleAt   DateTime?
+  applyAt    DateTime  @default(now())
+  isAccept   Boolean   @default(false)
+  isGuest    Boolean   @default(false)
+  household  Household @relation(references: [houseId], fields: [houseId], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 2-3. 게시글 & 댓글 & 좋아요 게시글
+model Post {
+  postId    Int        @id @default(autoincrement())
+  title     String     @unique
+  id        String
+  content   String
+  postAt    DateTime   @default(now())
+  isNotice  Boolean    @default(false)
+  users     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  reples    Reple[]
+  likes     Likes[]
+  postFiles PostFile[]
+}
+
+model Reple {
+  repleId Int      @id @default(autoincrement())
+  postId  Int
+  id      String
+  content String
+  repleAt DateTime @default(now())
+  post    Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
+  users   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Likes {
+  postId Int      @id
+  id     String
+  likeAt DateTime @default(now())
+  post   Post     @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
+  user   User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 2-5. 투표 & 후보 & 투표대상
+model Vote {
+  voteId      Int          @id @default(autoincrement())
+  title       String       @unique
+  startAt     DateTime
+  finishAt    DateTime
+  reChoice    Boolean      @default(false)
+  candidates  Candidate[]
+  voteTargets VoteTarget[]
+  userVotes   UserVote[]
+}
+
+model Candidate {
+  candId  Int     @id @default(autoincrement())
+  voteId  Int
+  vote    Vote    @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
+  name    String
+  count   Int     @default(0)
+  profile String?
+  fileId  Int?
+  file    File?   @relation(references: [fileId], fields: [fileId], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model VoteTarget {
+  voteId    Int       @id
+  vote      Vote      @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
+  aptDong   Int
+  apartment Apartment @relation(references: [aptDong], fields: [aptDong], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 2-6. 민원
+model Complaint {
+  comId    Int        @id @default(autoincrement())
+  id       String
+  category Categories
+  comAt    DateTime   @default(now())
+  content  String
+  state    States     @default(YET)
+  users    User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 2-7. 채팅목록 & 채팅방
+model ChattingRoom {
+  chatId    Int        @id @default(autoincrement())
+  id        String
+  createAt  DateTime   @default(now())
+  users     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  chattings Chatting[]
+}
+
+model Chatting {
+  chatId       Int          @id
+  sender       String
+  msg          String
+  sendAt       DateTime     @default(now())
+  isRead       Boolean      @default(false)
+  chattingRoom ChattingRoom @relation(references: [chatId], fields: [chatId], onDelete: Cascade, onUpdate: Cascade)
+}
+
+//--------------------------------------------------
+// 3. 관계 스키마
+// 3-1. 입주민 - 투표 관계
+model UserVote {
+  voteId  Int     @id
+  id      String
+  isVoted Boolean @default(false)
+  choice  Int?
+  vote    Vote    @relation(references: [voteId], fields: [voteId], onDelete: Cascade, onUpdate: Cascade)
+  user    User    @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 3-7. 게시글 - 파일 관계
+model PostFile {
+  fileId Int  @id
+  postId Int
+  file   File @relation(references: [fileId], fields: [fileId], onDelete: Cascade, onUpdate: Cascade)
+  post   Post @relation(references: [postId], fields: [postId], onDelete: Cascade, onUpdate: Cascade)
+}
+
+//--------------------------------------------------
+// 4. 부가 기능 스키마
+// 4-1. 알림
+model Alarm {
+  alertId Int      @id @default(autoincrement())
+  id      String
+  type    Types
+  isRead  Boolean  @default(false)
+  content String
+  alertAt DateTime @default(now())
+  user    User     @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// 4-2. 파일
+model File {
+  fileId     Int         @id @default(autoincrement())
+  src        String
+  meta       String?
+  postFiles  PostFile[]
+  candidates Candidate[]
+}
+
+//--------------------------------------------------
+// 5. ENUM
+// 5-1. 민원 카테고리 [공공시설, 주거공간내 하자, 누수, 동파, 전입/출, 요금관련, 기타]
+enum Categories {
+  PUBLIC
+  FLAW
+  LEAK
+  FREEZE
+  IN_OR_OUT
+  FARE
+  ETC
+}
+
+// 5-2. 민원 처리상태 [접수 전, 처리 중, 접수 완료]
+enum States {
+  YET
+  ING
+  DONE
+}
+
+// 5-3. 알람 유형 [댓글, 공지, 채팅, 민원처리]
+enum Types {
+  REPLE_ALARM
+  NOTICE_ALARM
+  CHAT_ALARM
+  COM_ALARM
+}
+
+// 5-4. 성별 [남성, 여성]
+enum Gender {
+  MALE
+  FEMALE
+}
