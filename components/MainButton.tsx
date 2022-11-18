@@ -8,10 +8,10 @@ interface MainButtonProps {
 export default function MainButton({children, text}: MainButtonProps) {
 	return (
 		<button>
-			<div className={"flex justify-center items-center aspect-square rounded-3xl bg-pantone h-20"}>
+			<div className={"flex justify-center items-center aspect-square rounded-3xl bg-pantone h-20 drop-shadow-lg"}>
 				{children}
 			</div>
-			<p>
+			<p className={"mt-2"}>
 				{text}
 			</p>
 		</button>
