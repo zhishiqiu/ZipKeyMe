@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+input::placeholder{
+    color:rgb(163, 161, 161);
+    font-size: 12px;
+}
+h2 {
+   font-weight: bolder;
+    font-size: 14px; 
+    margin-left: 5px;  
+}
+label {
+    font-size: 14px;
+    font-weight: 500;
+}
+p {
+    line-height: 60px;
+}
+.flex-col input {
+    border-radius: 5px;
+    border-color: rgb(184, 175, 175);
+}
+.memberjoin {
+    width: 400px;
+    height: 55px;
+    font-weight: 1000;
+    background-color: #6667ab;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.memberjoin p {
+    font-size: 17px;
+    color: aliceblue;
+    text-align: center;
+    line-height: 55px;
+}
+.choose input{
+    width: 25px;
+    height: 25px;
+    margin-left: 5px;
+}
+form {
+    margin-top: 10px;
+}
