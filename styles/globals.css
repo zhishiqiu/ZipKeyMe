@@ -1,6 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.title {
+    background-image: url("../public/back_icon.svg");
+    background-repeat:no-repeat;
+    margin-left: 5px;
+    font-size: 17px;
+    color:#6667ab ;
+    font-weight: bolder;  
+    margin-top: 10px; 
+}
+.title span {
+    margin-left: 20px;
+}
 input::placeholder{
     color:rgb(163, 161, 161);
     font-size: 12px;
@@ -22,13 +35,13 @@ p {
     border-color: rgb(184, 175, 175);
 }
 .memberjoin {
-    width: 400px;
+    width: 350px;
     height: 55px;
     font-weight: 1000;
     background-color: #6667ab;
     border-radius: 5px;
     margin-top: 10px;
-    margin-left: 10px;
+    margin-left: 5px;
 }
 .memberjoin p {
     font-size: 17px;
@@ -43,4 +56,8 @@ p {
 }
 form {
     margin-top: 10px;
+}
+.end {
+    background-repeat: no-repeat;
+    margin: 30px 100px;
 }

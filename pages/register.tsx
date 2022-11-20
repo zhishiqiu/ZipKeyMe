@@ -1,13 +1,17 @@
 // 회원가입 페이지
-
-import type {NextPage} from 'next'
-import Layout from "../components/layout";
+import CopyRights from "public/copyRights.svg";
+import type {NextPage} from 'next';
 import Head from "next/head";
 
 const Register: NextPage = () => {
 	return (
-		<Layout title={"회원가입"} hasTabBar>
+		<div>
 			<Head><title>Register</title></Head>
+			<div className='title'>
+
+				<span>회원가입</span>
+				   
+			</div>
 			<div className={"flex flex-col space-y-5 divide-y"}>
 				<form>
 				<h2>아이디</h2>
@@ -42,10 +46,12 @@ const Register: NextPage = () => {
 				<div className='memberjoin'>
 				<p><input type="submit" value="회원가입"></input></p>
 				</div>
-				
+				<div className='end'>
+				<CopyRights />	
+				</div>
 				</form>
 			</div>
-		</Layout>
+		</div>
 	);
 }
 
