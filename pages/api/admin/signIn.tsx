@@ -6,21 +6,19 @@ import { withSession } from "@libs/server/withSession";
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { account, password } = req.body;
 
-  const foundUser = await client.user.findUnique({
+  const foundStaff = await client.staff.findUnique({
     where: {
       id: account,
     },
   });
 
-  if (!foundUser) {
+  if (!foundStaff) {
     return res.json({ ok: false, message: "Invalid account" });
-  } else if (!foundUser.isAccept) {
-    return res.json({ ok: false, message: "No permission" });
-  } else if (foundUser.pwd !== password) {
+  } else if (foundStaff.pwd !== password) {
     return res.json({ ok: false, message: "Invalid password" });
   } else {
     req.session.user = {
-      account: foundUser.id,
+      account: foundStaff.id,
     };
     await req.session.save();
     res.json({ ok: true });
