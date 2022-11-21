@@ -44,7 +44,7 @@ const Enter: NextPage = () => {
     // 로그인 성공시 메인페이지로 라우팅
     if (data?.ok) {
       router.push("/");
-    } else if (!data?.ok) {
+    } else {
       //로그인 실패시 실패이유 출력
       if (data?.message == "Invalid account") {
         setFailReason("잘못된 계정입니다.");
