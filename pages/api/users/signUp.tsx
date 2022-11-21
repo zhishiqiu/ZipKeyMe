@@ -32,11 +32,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // 3. 가입하는 입주민의 주소를 가진 새로운 Household 생성, houseId를 가져온다.
   // 4. 가입하는 입주민의 주소에 맞는 Household의 houseId를 FK로 가지는 User 생성
   // 5. 회원가입 완료
-  const foundUser = await client.user.findUnique({
+  const foundUser = await client.user.findMany({
     where: {
       id: account,
     },
+    select: {
+      id: true,
+    },
   });
+  if (foundUser) return res.json({ ok: false, message: "Duplicate account" });
+  const foundHouseId = 
 }
 
 export default withSession(apiHandler({ method: "POST", handler }));
