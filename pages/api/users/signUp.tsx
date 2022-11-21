@@ -27,11 +27,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // 1-a. 중복되는 계정이 없으면 2로 진행
   // 1-b. 중복되는 계정이 있으면 message와 함께 response.
   // 2. 주소에서 동, 호수를 추출하여 해당 Household가 있는지 확인
-  // 2-a. 있으면 4로 이동
-  // 2-b. 없으면 그대로 진행
-  // 3. 가입하는 입주민의 주소를 가진 새로운 Household 생성, houseId를 가져온다.
-  // 4. 가입하는 입주민의 주소에 맞는 Household의 houseId를 FK로 가지는 User 생성
-  // 5. 회원가입 완료
+  // 2-a. 있으면 해당 houseId를 FK로 하기
+  // 2-b. 없으면 새로운 HouseHold 생성 (이때 해당 가구의 aptDong이 관계를 맺은 Apartment테이블에 존재하지 않을 경우, 새로운 Apartment 또한 생성한다.)
+  // 3. Apartment의 aptDong을 참조하는 HouseHold의 houseId를 참조하는 User 생성
   const foundUser = await client.user.findMany({
     where: {
       id: account,
@@ -41,7 +39,48 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     },
   });
   if (foundUser) return res.json({ ok: false, message: "Duplicate account" });
-  const foundHouseId = 
+  const addresses = address.split("/");
+  const registerUser = await client.user.create({
+    data: {
+      id: account,
+      pwd: password,
+      name,
+      phone,
+      email,
+      gender,
+      birth,
+      pushAgree: agree,
+      household: {
+        connectOrCreate: {
+          where: {
+            aptHo_aptDong: { aptHo: addresses[1], aptDong: addresses[0] },
+          },
+          create: {
+            aptHo: addresses[1],
+            aptDong: addresses[0],
+            holder: name,
+            apartment: {
+              connectOrCreate: {
+                where: {
+                  aptDong: addresses[0],
+                },
+                create: {
+                  aptDong: address[0],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    include: {
+      household: {
+        include: {
+          apartment: true,
+        },
+      },
+    },
+  });
 }
 
 export default withSession(apiHandler({ method: "POST", handler }));
