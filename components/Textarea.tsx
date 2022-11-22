@@ -4,7 +4,7 @@ interface TextAreaProps {
   [key: string]: any;
 }
 
-export default function TextArea({ label, name, ...rest }: TextAreaProps) {
+export default function Textarea({ label, name, ...rest }: TextAreaProps) {
   return (
     <div>
       {label ? (
