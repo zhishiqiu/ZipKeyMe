@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import Layout from "../components/layout";
+import Layout from "@components/Layout";
 import Head from "next/head";
 import Carousel from "../components/Carousel";
 import MainButton from "../components/MainButton";
