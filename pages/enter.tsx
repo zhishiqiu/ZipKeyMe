@@ -48,14 +48,16 @@ const Enter: NextPage = () => {
       //로그인 실패시 실패이유 출력
       if (data?.message == "Invalid account") {
         setFailReason("잘못된 계정입니다.");
+        setShowReason(true);
       } else if (data?.message == "Invalid password") {
         setFailReason("잘못된 비밀번호입니다.");
+        setShowReason(true);
       } else if (data?.message == "No permission") {
         setFailReason("승인 대기 중인 계정입니다.");
+        setShowReason(true);
       }
-      setShowReason(true);
     }
-  }, [data]);
+  }, [data, router]);
 
   return (
     <div>

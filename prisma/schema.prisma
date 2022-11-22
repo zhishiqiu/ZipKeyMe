@@ -42,12 +42,14 @@ model Household {
   houseId   Int       @id @default(autoincrement())
   aptHo     Int
   aptDong   Int
-  moveInAt  DateTime
+  moveInAt  DateTime  @default(now())
   holder    String
   apartment Apartment @relation(references: [aptDong], fields: [aptDong])
   fares     Fare[]
   users     User[]
   cars      Car[]
+
+  @@unique([aptHo, aptDong])
 }
 
 // 1-3. 아파트 동
