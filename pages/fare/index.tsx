@@ -1,5 +1,5 @@
 import type {NextPage} from 'next'
-import Layout from "../../components/layout";
+import Layout from "@components/Layout";
 import Head from "next/head";
 import BACKICON from "public/jump_icon.svg"
 import Link from "next/link";

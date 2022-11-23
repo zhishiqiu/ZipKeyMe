@@ -1,7 +1,7 @@
 // 차량 등록 페이지
 
 import type {NextPage} from 'next'
-import Layout from "../../components/layout";
+import Layout from "@components/Layout";
 import Head from "next/head";
 
 const Car: NextPage = () => {
