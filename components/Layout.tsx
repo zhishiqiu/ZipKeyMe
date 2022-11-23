@@ -17,7 +17,7 @@ export default function Layout({title, canGoBack, hasTabBar, children}: LayoutPr
 	};
 
 	return (
-		<div className={router.pathname === "/" ? "h-screen bg-[#F8F8F8]" : ""}>
+		<div className={router.pathname === "/" ? "h-screen bg-[#F8F8F8]" : router.pathname === "/profile" ? "h-screen bg-[#FAFAFA]" : ""}>
 			{/* Header */}
 			<div
 				className={"bg-pantone w-full h-12 max-w-xl text-lg px-10 font-medium fixed text-white border-b tp-0 flex items-center"}>
