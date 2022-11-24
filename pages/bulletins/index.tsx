@@ -4,7 +4,6 @@ import Head from "next/head";
 import Bulletin from "@components/Bulletin";
 import useUser from "@libs/client/useUser";
 import useSWR from "swr";
-import { type } from "os";
 
 type Post = {
   postId: number;
@@ -40,20 +39,22 @@ const Bulletins: NextPage = () => {
         <title>Bulletins</title>
       </Head>
       <section className={"divide-y"}>
-        {data?.posts?.map((post) => (
-          <Bulletin
-            key={post.postId}
-            id={post.postId}
-            title={post.title}
-            content={post.content.substring(0, 15) + "..."}
-            createdAt={("" + post.postAt).substring(0, 10)}
-            comments={post._count.reples}
-            hearts={post._count.likes}
-            userId={post.id ? post.id : "공지"}
-            writer={post.users ? post.users.name : "아파트 관리사무소"}
-            isNotice={post.isNotice}
-          />
-        ))}
+        {data?.posts?.map((post) =>
+          post.isNotice ? null : (
+            <Bulletin
+              key={post.postId}
+              id={post.postId}
+              title={post.title}
+              content={post.content.length > 15 ? post.content.substring(0, 15) + "..." : post.content}
+              createdAt={("" + post.postAt).substring(0, 10)}
+              comments={post._count.reples}
+              hearts={post._count.likes}
+              userId={post.id ? post.id : "공지"}
+              writer={post.users ? post.users.name : "아파트 관리사무소"}
+              isNotice={post.isNotice}
+            />
+          )
+        )}
       </section>
     </Layout>
   );
