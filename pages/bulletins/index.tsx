@@ -1,29 +1,58 @@
-import type {NextPage} from 'next'
+import type { NextPage } from "next";
 import Layout from "@components/Layout";
 import Head from "next/head";
 import Bulletin from "@components/Bulletin";
+import useUser from "@libs/client/useUser";
+import useSWR from "swr";
+import { type } from "os";
+
+type Post = {
+  postId: number;
+  title: string;
+  id: string | null;
+  content: string;
+  postAt: Date;
+  isNotice: boolean;
+  _count: {
+    reples: number;
+    likes: number;
+  };
+};
+
+interface PostsResponse {
+  ok: boolean;
+  posts: Post[];
+}
 
 const Bulletins: NextPage = () => {
+  const { user, isLoading } = useUser();
+  const { data } = useSWR<PostsResponse>("/api/bulletins/posts");
+  console.log(data);
   return (
-    <Layout title={"게시판"} canGoBack hasTabBar>
-      <Head><title>Bulletins</title></Head>
+    <Layout
+      title={"게시판"}
+      canGoBack
+      hasTabBar
+    >
+      <Head>
+        <title>Bulletins</title>
+      </Head>
       <section className={"divide-y"}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => (
+        {data?.posts?.map((post) => (
           <Bulletin
-            key={i}
-            id={i}
-            title={"데이터베이스"}
-            content={"IC-PBL 최종 발표"}
-            createdAt={"2022-10-25"}
-            comments={1}
-            hearts={1}
-            userId={1}
+            key={post.postId}
+            id={post.postId}
+            title={post.title}
+            content={post.content}
+            createdAt={post.postAt.substring(10)}
+            comments={post._count.reples}
+            hearts={post._count.likes}
+            userId={post.id}
           />
         ))}
       </section>
     </Layout>
   );
-}
+};
 
 export default Bulletins;
-

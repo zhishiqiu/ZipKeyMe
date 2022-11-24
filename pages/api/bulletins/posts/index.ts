@@ -5,7 +5,13 @@ import { withSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method == "GET") {
-    const posts = await client.post.findMany({});
+    const posts = await client.post.findMany({
+      include: {
+        _count: {
+          select: { likes: true, reples: true },
+        },
+      },
+    });
     return res.json({ ok: true, posts });
   }
   if (req.method == "POST") {
