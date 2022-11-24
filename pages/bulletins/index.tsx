@@ -13,6 +13,9 @@ type Post = {
   content: string;
   postAt: Date;
   isNotice: boolean;
+  users: {
+    name: string;
+  } | null;
   _count: {
     reples: number;
     likes: number;
@@ -27,7 +30,6 @@ interface PostsResponse {
 const Bulletins: NextPage = () => {
   const { user, isLoading } = useUser();
   const { data } = useSWR<PostsResponse>("/api/bulletins/posts");
-  console.log(data);
   return (
     <Layout
       title={"게시판"}
@@ -44,10 +46,12 @@ const Bulletins: NextPage = () => {
             id={post.postId}
             title={post.title}
             content={post.content}
-            createdAt={post.postAt.substring(10)}
+            createdAt={("" + post.postAt).substring(0, 10)}
             comments={post._count.reples}
             hearts={post._count.likes}
-            userId={post.id}
+            userId={post.id ? post.id : "공지"}
+            writer={post.users ? post.users.name : "아파트 관리사무소"}
+            isNotice={post.isNotice}
           />
         ))}
       </section>
