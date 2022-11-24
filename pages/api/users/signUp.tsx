@@ -65,7 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                   aptDong: addresses[0],
                 },
                 create: {
-                  aptDong: address[0],
+                  aptDong: addresses[0],
                 },
               },
             },
