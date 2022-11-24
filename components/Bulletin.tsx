@@ -9,7 +9,8 @@ interface BulletinProps {
   userId: string; // id of the user
   comments: number;
   hearts: number;
-  isNotice?: false;
+  isNotice?: boolean;
+  writer: string;
 }
 
 export default function Bulletin({
@@ -20,7 +21,8 @@ export default function Bulletin({
   comments,
   hearts,
   userId,
-  isNotice,
+  isNotice = false,
+  writer,
 }: BulletinProps) {
   return (
     <Link
@@ -47,7 +49,7 @@ export default function Bulletin({
           <div className={"flex mr-auto space-x-2.5"}>
             <span className={"text-gray-500"}>{createdAt}</span>
             {/* TODO : 유저 ID를 통해 유저의 이름을 가져오기 */}
-            <span>김승호</span>
+            <span>{writer}</span>
           </div>
 
           {/*	하트 수 */}
