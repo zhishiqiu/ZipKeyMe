@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 export default withSession(
   apiHandler({
-    method: "GET",
+    method: ["GET"],
     handler,
     isPrivate: true,
   })
