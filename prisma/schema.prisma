@@ -103,11 +103,11 @@ model Car {
 model Post {
   postId    Int        @id @default(autoincrement())
   title     String     @unique
-  id        String
-  content   String
+  id        String?
+  content   String     @db.Text
   postAt    DateTime   @default(now())
   isNotice  Boolean    @default(false)
-  users     User       @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
+  users     User?      @relation(references: [id], fields: [id], onDelete: Cascade, onUpdate: Cascade)
   reples    Reple[]
   likes     Likes[]
   postFiles PostFile[]
