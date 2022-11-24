@@ -9,7 +9,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     select: {
       id: true,
       name: true,
-      phone: true,
+      household: {
+        select: {
+          aptDong: true,
+          aptHo: true,
+        },
+      },
     },
   });
   res.json({
