@@ -5,16 +5,16 @@ import { withSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method == "GET") {
-    const posts;
+    const posts = await client.post.findMany({});
     return res.json({ ok: true, posts });
   }
   if (req.method == "POST") {
-    const post;
-    return res.json({ ok: true, post });
+    // const post;
+    // return res.json({ ok: true, post });
   }
   if (req.method == "PATCH") {
-    const post;
-    return res.json({ ok: true, post });
+    // const post;
+    // return res.json({ ok: true, post });
   }
 }
 
