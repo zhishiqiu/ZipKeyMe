@@ -8,7 +8,7 @@ const Notice: NextPage = () => {
 	return (
 		<Layout title={"공지사항"} hasTabBar canGoBack>
 			<Head><title>Notice</title></Head>
-			<Link className='bg-[#6667ab]  visited:bg-[#FFFFFF]' href={"/notice/[id].tsx" } legacyBehavior>
+			<Link href={"/notice/[id].tsx" } legacyBehavior>
 			<div className={"flex flex-col space-y-0 divide-y "}>
 				{/* 공지내용6 */}
 			<section className={"bg-[#6667ab] bg-opacity-20 px-3 h-28 border-gray-300 "}>
