@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const Fare: NextPage = () => {
   return (
-    <Layout title={"요금 조회"} hasTabBar>
+    <Layout title={"요금 조회"} hasTabBar canGoBack>
       <Head><title>Fare Check</title></Head>
       <div className='bg-[#f5f5f5] grid'>
       <div className={"flex flex-col space-y-5 divide-y mt-6 "}>

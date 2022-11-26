@@ -4,7 +4,7 @@ import Head from "next/head";
 
 const FarePay: NextPage = () => {
 	return (
-		<Layout title={"요금 납부"} hasTabBar>
+		<Layout title={"요금 납부"} hasTabBar canGoBack>
 			<Head><title>Fare pay</title></Head>
 			<div className='bg-[#f5f5f5] grid'>
 				<div className={"flex flex-col space-y-5 divide-y mt-6 "}>

@@ -1,10 +1,10 @@
 import type {NextPage} from 'next'
-import Layout from "../../components/layout";
+import Layout from "@components/Layout";
 import Head from "next/head";
 
 const FarePay: NextPage = () => {
 	return (
-		<Layout title={"상세 고지 내역"} hasTabBar>
+		<Layout title={"상세 고지 내역"} hasTabBar canGoBack>
 			<Head><title>Fare pay's details</title></Head>
 			<div className={"flex flex-col space-y-5 divide-y"}>
                 <section className={"bg-white border-2 rounded-2xl px-3  pb-4 mt-5 w-80  ml-5 border-t-0 border-b-gray-300 shadow-md"}>
