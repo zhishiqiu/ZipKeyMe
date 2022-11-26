@@ -6,7 +6,7 @@ import Head from "next/head";
 
 const Car: NextPage = () => {
 	return (
-		<Layout title={"차량 등록"} hasTabBar>
+		<Layout title={"차량 등록"} hasTabBar canGoBack>
 			<Head><title>Car</title></Head>
 			<div className={"flex flex-col space-y-5 divide-y"}>
 				<form>
