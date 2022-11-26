@@ -59,7 +59,7 @@ const Register: NextPage = () => {
     // 회원가입 성공시 메인페이지로 라우팅
     if (data?.ok) {
       setFailReason(
-        "회원가입 신청이 완료되었습니다.\n관리 사무소의 승인을 받으면 로그인 하실 수 있습니다."
+        "회원가입 신청이 완료되었습니다. 관리 사무소의 승인을 받으면 로그인 하실 수 있습니다."
       );
       setShowReason(true);
     } else {
