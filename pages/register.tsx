@@ -3,8 +3,36 @@ import CopyRights from "public/copyRights.svg";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Layout from "@components/Layout";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import useMutation from "@libs/client/useMutation";
+
+interface SignUpForm {
+  account: string;
+  password: string;
+  name: string;
+  birth: string;
+  email: string;
+  gender: boolean;
+  phone: string;
+  address: string;
+  agree: boolean;
+}
+
+interface MutationResult {
+  ok: Boolean;
+  message?: string;
+}
 
 const Register: NextPage = () => {
+  const [signUp, { loading, data, error }] =
+    useMutation<MutationResult>("/api/users/signUp");
+  const { register, handleSubmit, reset } = useForm<SignUpForm>();
+  const onValid = (validForm: SignUpForm) => {
+    if (loading) return;
+    // 형식적 validation
+    signUp(validForm);
+  };
   return (
     <Layout
       title={"회원가입"}
@@ -15,9 +43,11 @@ const Register: NextPage = () => {
         <title>Register</title>
       </Head>
 
-      <div></div>
       <div className={"flex flex-col space-y-5 divide-y "}>
-        <form className="leading-10 ml-0.5">
+        <form
+          onSubmit={handleSubmit(onValid)}
+          className="leading-10 ml-0.5"
+        >
           <h2 className="font-black">아이디</h2>
           <p>
             <input
