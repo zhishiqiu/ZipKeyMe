@@ -10,12 +10,14 @@ import useMutation from "@libs/client/useMutation";
 interface SignUpForm {
   account: string;
   password: string;
+  checkPassword: string;
   name: string;
   birth: string;
   email: string;
   gender: boolean;
   phone: string;
-  address: string;
+  aptHo: string;
+  aptDong: string;
   agree: boolean;
 }
 
@@ -54,27 +56,35 @@ const Register: NextPage = () => {
               className="placeholder-gray-300 rounded border-gray-300"
               type="text"
               size={40}
-              name="text"
               placeholder="영문,소문자,숫자 조합"
+              {...register("account", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">비밀번호</h2>
           <p>
             <input
               className="placeholder-gray-300 rounded border-gray-300"
-              type="text"
+              type="password"
               size={40}
-              name="text"
               placeholder="8~20자리 영문,숫자 조합"
+              {...register("password", {
+                required: true,
+                minLength: 8,
+                maxLength: 20,
+              })}
             ></input>
           </p>
           <p>
             <input
-              className="placeholder-gray-300 rounded border-gray-300"
-              type="text"
+              className="placeholder-gray-300 mt-3 rounded border-gray-300"
+              type="password"
               size={40}
-              name="text"
               placeholder="다시 입력해 주세요"
+              {...register("checkPassword", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">이름</h2>
@@ -83,28 +93,34 @@ const Register: NextPage = () => {
               className="placeholder-gray-300 rounded border-gray-300"
               type="text"
               size={40}
-              name="text"
               placeholder="이름을 입력하세요"
+              {...register("name", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">생년월일</h2>
           <p>
             <input
               className="placeholder-gray-300 rounded border-gray-300"
-              type="text"
+              type="date"
               size={40}
-              name="text"
-              placeholder="생년월일을 입력해주세요,예:19990110"
+              placeholder="날짜선택"
+              {...register("checkPassword", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">이메일</h2>
           <p>
             <input
               className="placeholder-gray-300 rounded border-gray-300"
-              type="text"
+              type="email"
               size={40}
-              name="text"
-              placeholder="이메일을 입력해주세요,예:111@gmail.com"
+              placeholder="이메일을 입력해주세요,예:aaa111@gmail.com"
+              {...register("checkPassword", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">성별</h2>
@@ -133,8 +149,10 @@ const Register: NextPage = () => {
               className="placeholder-gray-300 rounded border-gray-300"
               type="text"
               size={40}
-              name="text"
               placeholder="'-'를 제외한 숫자만 입력해주세요"
+              {...register("checkPassword", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">주소</h2>
@@ -143,16 +161,20 @@ const Register: NextPage = () => {
               className="placeholder-gray-300 rounded border-gray-300 text-center"
               type="text"
               size={17}
-              name="text"
-              placeholder="동(스크롤로 선택)"
+              placeholder="동"
+              {...register("checkPassword", {
+                required: true,
+              })}
             ></input>
             &nbsp;&nbsp;&nbsp;
             <input
               className="placeholder-gray-300 rounded border-gray-300 text-center"
               type="text"
               size={17}
-              name="text"
-              placeholder="호(스크롤로 선택)"
+              placeholder="호"
+              {...register("checkPassword", {
+                required: true,
+              })}
             ></input>
           </p>
           <h2 className="font-black">약관 동의</h2>
