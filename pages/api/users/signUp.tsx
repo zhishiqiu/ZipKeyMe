@@ -12,7 +12,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     email,
     gender,
     phone,
-    address,
+    aptHo,
+    aptDong,
     agree,
   } = req.body;
 
@@ -39,7 +40,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     },
   });
   if (foundUser) return res.json({ ok: false, message: "Duplicate account" });
-  const addresses = address.split("/");
   const registerUser = await client.user.create({
     data: {
       id: account,
@@ -53,19 +53,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       household: {
         connectOrCreate: {
           where: {
-            aptHo_aptDong: { aptHo: addresses[1], aptDong: addresses[0] },
+            aptHo_aptDong: { aptHo, aptDong },
           },
           create: {
-            aptHo: addresses[1],
-            aptDong: addresses[0],
+            aptHo,
+            aptDong,
             holder: name,
             apartment: {
               connectOrCreate: {
                 where: {
-                  aptDong: addresses[0],
+                  aptDong,
                 },
                 create: {
-                  aptDong: addresses[0],
+                  aptDong,
                 },
               },
             },
