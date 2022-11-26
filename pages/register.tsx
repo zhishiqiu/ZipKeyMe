@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Layout from "@components/Layout";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import Button from "@components/Button";
 import { useRouter } from "next/router";
 import useMutation from "@libs/client/useMutation";
@@ -17,8 +17,8 @@ interface SignUpForm {
   email: string;
   gender: boolean;
   phone: string;
-  aptHo: string;
-  aptDong: string;
+  aptHo: number;
+  aptDong: number;
   agree: boolean;
 }
 
@@ -30,19 +30,46 @@ interface MutationResult {
 const Register: NextPage = () => {
   const [signUp, { loading, data, error }] =
     useMutation<MutationResult>("/api/users/signUp");
-  const { register, handleSubmit, watch, reset } = useForm<SignUpForm>();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<SignUpForm>();
   const [mustAgree, setMustAgree] = useState(true);
   const [checkPassword, setCheckPassword] = useState("");
+  const [failReason, setFailReason] = useState("");
+  const [showReason, setShowReason] = useState(false);
+  const router = useRouter();
+
   const onValid = (validForm: SignUpForm) => {
-    // if (loading) return;
-    // 형식적 validation
-    // signUp(validForm);
-    console.log(validForm);
+    if (!mustAgree) {
+      setFailReason("필수 항목에 대한 동의가 이루어지지 않았습니다.");
+      setShowReason(true);
+      return;
+    }
+    if (loading) return;
+    //TODO: 형식적 validation
+    signUp(validForm);
+  };
+  const onInvalid = (errors: FieldErrors) => {
+    // console.log(errors);
   };
   useEffect(() => {
-    const check = watch((data) => console.log(data));
-  }, [watch]);
-
+    console.log(data);
+    // 회원가입 성공시 메인페이지로 라우팅
+    if (data?.ok) {
+      setFailReason(
+        "회원가입 신청이 완료되었습니다.\n관리 사무소의 승인을 받으면 로그인 하실 수 있습니다."
+      );
+      setShowReason(true);
+    } else {
+      //실패시 실패이유 출력
+      if (data?.message == "Duplicate account") {
+        setFailReason("이미 사용중인 계정입니다.");
+        setShowReason(true);
+      }
+    }
+  }, [data, router]);
   return (
     <Layout
       title={"회원가입"}
@@ -55,7 +82,7 @@ const Register: NextPage = () => {
 
       <div className={"flex flex-col items-center mt-3 divide-y w-full"}>
         <form
-          onSubmit={handleSubmit(onValid)}
+          onSubmit={handleSubmit(onValid, onInvalid)}
           className="flex flex-col mx-2 space-y-2"
         >
           <h2 className="font-black">아이디</h2>
@@ -80,6 +107,8 @@ const Register: NextPage = () => {
                 required: true,
                 minLength: 8,
                 maxLength: 20,
+                validate: (value) =>
+                  value === checkPassword || "비밀번호가 일치하지 않습니다.",
               })}
             ></input>
           </p>
@@ -111,12 +140,14 @@ const Register: NextPage = () => {
               type="date"
               size={40}
               placeholder="날짜선택"
+              min="1922-01-01"
+              max="2022-01-01"
               {...register("birth", {
                 required: true,
               })}
             ></input>
           </p>
-          <h2 className="font-black mx-2">이메일</h2>
+          <h2 className="font-black">이메일</h2>
           <p>
             <input
               className="w-full placeholder-gray-300 rounded-xl border-gray-300"
@@ -181,21 +212,23 @@ const Register: NextPage = () => {
           <p className="flex justify-between">
             <input
               className="w-1/2 placeholder-gray-300 justify-self-auto rounded-xl border-gray-300 text-center"
-              type="text"
+              type="number"
               size={18}
               placeholder="동"
               {...register("aptDong", {
                 required: true,
+                valueAsNumber: true,
               })}
             ></input>
             &nbsp;&nbsp;&nbsp;
             <input
               className="w-1/2 placeholder-gray-300 justify-self-auto rounded-xl border-gray-300 text-center"
-              type="text"
+              type="number"
               size={18}
               placeholder="호"
               {...register("aptHo", {
                 required: true,
+                valueAsNumber: true,
               })}
             ></input>
           </p>
@@ -227,6 +260,24 @@ const Register: NextPage = () => {
           <CopyRights />
         </div>
       </div>
+      {showReason ? (
+        <div className="z-10 absolute inset-0 flex justify-center items-center">
+          <div className="bg-gray-100 opacity-90 mt-10 flex justify-center items-center flex-col w-72 rounded-lg shadow-xl h-auto p-2">
+            <h4 className="text-base mt-2 mx-4 text-gray-700 font-semibold text-center">
+              {failReason}
+            </h4>
+            <button
+              disabled={isSubmitting}
+              className="my-3 w-auto px-8 h-10 bg-pantone text-white rounded-md shadow hover:shadow-lg font-semibold"
+              onClick={() =>
+                data?.ok ? router.push("/enter") : setShowReason(false)
+              }
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      ) : null}
     </Layout>
   );
 };
