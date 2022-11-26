@@ -85,7 +85,7 @@ const Enter: NextPage = () => {
           <Input
             register={register("password")}
             name="password"
-            type="password"
+            type="current-password"
             placeHolder="비밀번호를 입력해주세요."
             required
             loginInput
