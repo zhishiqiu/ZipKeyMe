@@ -3,6 +3,7 @@ import CopyRights from "public/copyRights.svg";
 import type {NextPage} from 'next';
 import Head from "next/head";
 import BACKICON from "public/back_icon.svg"
+import Link from "next/link";
 const Register: NextPage = () => {
 	return (
 		<div>
@@ -10,7 +11,7 @@ const Register: NextPage = () => {
 			
 			<div>
 			
-				<p className="ml-2 mt-5 inline-block"><BACKICON/></p>
+		<Link href={"/enter"}><p className="ml-2 mt-5 inline-block"><BACKICON/></p></Link>
 				<span className="ml-1 text-[#6667ab] text-lg font-black">  회원가입</span>
 				   
 			</div>
@@ -47,15 +48,23 @@ const Register: NextPage = () => {
 					<label className="font-medium text-sm">[선택]푸시 알림 수신 동의</label>
 				</div>
 				<div className='w-80 h-14 font-black bg-[#6667ab] ml-4 mt-3 rounded'>
-				<p className="text-white text-center text-lg "><input className="mt-3" type="submit" value="회원가입"></input></p>
+				<p className="text-white text-center text-lg "><input className="mt-3" type="submit"  value="회원가입"></input></p>
 				</div>
 				<div className='mt-5 ml-14'>
-				<CopyRights />	
+				<Link href="/admin/enter">
+				<CopyRights />
+				</Link>	
 				</div>
 				</form>
 			</div>
+			
 		</div>
+		
+		
 	);
 }
+
+
+		
 
 export default Register;
