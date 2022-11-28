@@ -65,11 +65,7 @@ const Home: NextPage = () => {
       </section>
 
       {/* 메뉴 섹션 */}
-      <section
-        className={
-          "bg-white mt-12 grid grid-cols-3 grid-rows-2 rounded-3xl py-6 drop-shadow-2xl mx-6 gap-y-6"
-        }
-      >
+      <section className={"bg-white mt-12 grid grid-cols-3 grid-rows-2 rounded-3xl py-6 drop-shadow-2xl mx-6 gap-y-6"}>
         <div className={"flex justify-center items-center"}>
           <MainButton text={"요금 조회"}>
             <FareCheck />

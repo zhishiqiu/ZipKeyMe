@@ -4,23 +4,28 @@ import client from "@libs/server/client";
 import { withSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const profile = await client.user.findUnique({
-    where: { id: req.session.user?.account },
-    select: {
-      id: true,
-      name: true,
-      household: {
-        select: {
-          aptDong: true,
-          aptHo: true,
+  const { id } = req.query;
+  const post = await client.post.findUnique({
+    where: {
+      postId: +id!,
+    },
+    include: {
+      reples: {
+        include: {
+          users: {
+            select: { name: true },
+          },
         },
+      },
+      users: {
+        select: { name: true },
+      },
+      _count: {
+        select: { likes: true, reples: true },
       },
     },
   });
-  res.json({
-    ok: true,
-    profile,
-  });
+  return res.json({ ok: true, post });
 }
 
 export default withSession(
