@@ -45,7 +45,11 @@ const Bulletins: NextPage = () => {
               key={post.postId}
               id={post.postId}
               title={post.title}
-              content={post.content.length > 15 ? post.content.substring(0, 15) + "..." : post.content}
+              content={
+                post.content.length > 15
+                  ? post.content.substring(0, 15) + "..."
+                  : post.content
+              }
               createdAt={("" + post.postAt).substring(0, 10)}
               comments={post._count.reples}
               hearts={post._count.likes}
